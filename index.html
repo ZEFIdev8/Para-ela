@@ -241,20 +241,24 @@
 
                 const memory = memories[currentIndex];
 
-            // 2. ATUALIZAR CONTEÚDO
-bgElement.style.backgroundImage = `url('${memory.image}')`;
-textElement.textContent = memory.text;
+                // 1. ESCONDER O TÍTULO
+                // Se for o primeiro clique ou qualquer clique subsequente, esconde o título
+                mainTitle.style.display = 'none';
 
-// Mudar texto do botão para "Próxima"
-document.querySelector('.action-btn').textContent = "Continuar?";
+                // 2. ATUALIZAR CONTEÚDO
+                bgElement.style.backgroundImage = `url('${memory.image}')`;
+                textElement.textContent = memory.text;
+                
+                // Mudar texto do botão para "Próxima"
+                document.querySelector('.action-btn').textContent = "Continuar?";
 
-// 3. ESCONDER O BOTÃO NO ÚLTIMO SLIDE
-if(currentIndex === memories.length - 1) {
+                if (currentIndex === memories.length - 1) {
     document.querySelector('.action-btn').style.display = 'none';
 }
-
-        
-
+                // Remove efeito de sumir (faz aparecer de novo)
+                contentContainer.classList.remove('fade-out');
+            }, 500);
+        }
 
         // --- CONFIGURAÇÃO: CONTADOR (DATA) ---
         const startDate = new Date(2023, 11, 9); 
@@ -292,7 +296,7 @@ if(currentIndex === memories.length - 1) {
         }
     </script>
 </body>
-
 </html>
+
 
 
