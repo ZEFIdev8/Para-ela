@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para você</title>
+    <!-- Fontes do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS GERAL --- */
+        :root {
+            --primary-color: #ff4d4d;
+            --secondary-color: #ffe6e6;
+            --text-dark: #4a4a4a;
+            --text-light: #ffffff;
+            --bg-color: #fff0f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* --- SEÇÃO 1: HERO (SLIDESHOW INTERATIVO) --- */
+        #hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: #000;
+        }
+
+        #hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px) brightness(0.6);
+        
+            transition: background-image 0.8s ease-in-out;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            max-width: 800px;
+            color: var(--text-light);
+            transition: opacity 0.5s ease;
+        }
+
+        .hero-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            animation: float 3s ease-in-out infinite;
+            /* Transição para sumir suavemente */
+            transition: opacity 0.5s ease, height 0.5s ease; 
+        }
+
+        .hero-text {
+            font-size: 1.6rem;
+            margin-bottom: 40px;
+            min-height: 80px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .action-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .action-btn:hover {
+            background-color: white;
+            color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        /* --- SEÇÃO 2: CONTADOR DE TEMPO --- */
+        .timer-section {
+            padding: 80px 20px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-title {
+            font-family: Arial, Helvetica, sans-serif ;/* Fonte bonita para títulos */
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .timer-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .time-box {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 100px;
+            box-shadow: 0 4px 10px rgba(255, 77, 77, 0.2);
+        }
+
+        .time-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: block;
+        }
+
+      
+
+        /* Animações e Utilitários */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .fade-out { opacity: 0; }
+        .hidden { display: none; } /* Classe para esconder elementos */
+
+        @media (max-width: 600px) {
+            .hero-title { font-size: 3rem; }
+            .hero-text { font-size: 1.2rem; }
+            .time-box { min-width: 70px; padding: 10px; }
+            .time-value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body onclick="playAudio()">
+
+    <!-- 1. SEÇÃO HERO -->
+    <section id="hero">
+        <div id="hero-background"></div>
+        <div class="hero-content" id="hero-content">
+            <!-- ID adicionado ao H1 para facilitar o controle pelo JS -->
+            <h1 class="hero-title" id="main-title">Você treina a muito tempo?</h1>
+            <p class="hero-text" id="dynamic-text"></p> <!-- Começa vazio ou com texto inicial -->
+            <button class="action-btn" onclick="nextMemory()">Responder?</button>
+        </div>
+    </section>
+
+    <!-- 2. CONTADOR -->
+    <section class="timer-section">
+        <h2 class="section-title">Compartilhando minha vida com você há</h2>
+        <div class="timer-container" id="timer">
+            <!-- JS preenche aqui -->
+        </div>
+    </section>
+
+  
+    <!-- ÁUDIO -->
+    <audio id="myaudio" loop>
+        <source src="audio/Taylor Swift - Style - Taylor Swift (youtube).mp3" type="audio/mpeg">
+        <source src="audio/Sixpence None The Richer - Kiss Me (Official Music Video) - Curb Records (youtube).mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        // --- CONFIGURAÇÃO: SLIDESHOW ---
+        const memories = [
+            {
+                // Este é o primeiro slide que aparece ao clicar
+                text: "Com uma simples mensagem que eu sentir ser a coisa mais arriscada que eu ja tinha feito na minha vida eu acabei mudando toda minha visão de mundo.",
+                image: "./fotos/a3.jpeg" 
+            },
+            {
+                text: "Ao longo desses 2 anos eu me senti o homem mais feliz do mundo, poder namorar uma mulher tão sensacional como você foi um sonho que eu nunca achei que ia acontecer.",
+                image: "./fotos/ac6.jpeg"
+            },
+            {
+                text: "Poder compartilhar meus melhores e piores momentos foi a motivação que me fez continuar a cada dia desde que te conheci.",
+                image: "./fotos/ac9.jpeg"
+            },
+            {
+                text: "Obrigado por ser meu amor, minha parceira e minha melhor amiga durante todo esse tempo.",
+                image: "./fotos/ac10.jpeg"},
+                 {
+                text: "Eu sei que, neste momento, está sendo difícil para nós. Eu sei que já me desculpei várias vezes e cometi os mesmos erros. Sendo sincero, eu nunca tinha percebido que as minhas ações realmente tinham consequências.Eu só quero dizer que, mesmo após tudo, eu ainda te amo e, se o seu coração permitir, você pode contar comigo para tudo no futuro. Quero poder ouvir a sua risada para sempre, quero poder estar lá quando você chorar. Eu sei que sou um homem falho, mas a única coisa da qual tenho certeza que não errei na vida foi em me apaixonar e amar você. Lara, você é a pessoa mais linda e alegre que já conheci, e mesmo que eu não participe mais da sua vida, tenho certeza de que você vai conquistar o mundo, sendo a garota forte que eu conheci. Vou terminar este texto dizendo que espero tudo de bom na sua vida. Não deixe que o que está acontecendo impeça você de ser feliz, de comer, dormir, rir e viver com a sua família. Se estiver confiante e quiser conversar, desabafar ou simplesmente gritar tudo o que está sentindo, eu estou aqui para escutar.",
+                image: "./fotos/ac11.jpeg"
+            }
+            
+        ];
+
+        // Começamos em -1 para que o primeiro clique mostre o índice 0
+        let currentIndex = -1; 
+        
+        const bgElement = document.getElementById('hero-background');
+        const textElement = document.getElementById('dynamic-text');
+        const contentContainer = document.getElementById('hero-content');
+        const mainTitle = document.getElementById('main-title');
+
+        // Define a imagem inicial (Fundo antes de clicar)
+        bgElement.style.backgroundImage = `url('./fotos/a2.jpeg')`; 
+
+        function nextMemory() {
+            playAudio(); // Garante o som
+
+            // Adiciona efeito de sumir
+            contentContainer.classList.add('fade-out');
+
+            setTimeout(() => {
+                // Avança para a próxima memória
+                currentIndex++;
+                
+                // Se chegou no fim, volta para o início (índice 0)
+                if (currentIndex >= memories.length) {
+                    currentIndex = 0;
+                }
+
+                const memory = memories[currentIndex];
+
+                // 1. ESCONDER O TÍTULO
+                // Se for o primeiro clique ou qualquer clique subsequente, esconde o título
+                mainTitle.style.display = 'none';
+
+                // 2. ATUALIZAR CONTEÚDO
+                bgElement.style.backgroundImage = `url('${memory.image}')`;
+                textElement.textContent = memory.text;
+                
+                // Mudar texto do botão para "Próxima"
+                document.querySelector('.action-btn').textContent = "Continuar?";
+
+                // Remove efeito de sumir (faz aparecer de novo)
+                contentContainer.classList.remove('fade-out');
+            }, 500);
+        }
+
+        // --- CONFIGURAÇÃO: CONTADOR (DATA) ---
+        const startDate = new Date(2023, 11, 9); 
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('timer').innerHTML = `
+                <div class="time-box"><span class="time-value">${days}</span><span>Dias</span></div>
+                <div class="time-box"><span class="time-value">${hours}</span><span>Horas</span></div>
+                <div class="time-box"><span class="time-value">${minutes}</span><span>Min</span></div>
+                <div class="time-box"><span class="time-value">${seconds}</span><span>Seg</span></div>
+            `;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // --- CONFIGURAÇÃO: ÁUDIO ---
+        const audio = document.getElementById("myaudio");
+        audio.volume = 0.1;
+        let audioStarted = false;
+
+        function playAudio() {
+            if (!audioStarted) {
+                audio.play().then(() => {
+                    audioStarted = true;
+                }).catch(e => console.log("Aguardando interação..."));
+            }
+        }
+    </script>
+</body>
+</html>
